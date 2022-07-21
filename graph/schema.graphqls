@@ -1,0 +1,48 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Links {
+  id: ID!
+  title: String!
+  address: String
+  postedBy: User
+  user: User!
+}
+
+type User {
+  id: ID!
+  name: String!
+}
+
+type Query {
+  links: [links!]
+}
+
+input newLink {
+  title: String!
+  address: String!
+} 
+
+input refreshTokenInput {
+  token: String!
+}
+
+input newUser {
+  username: String!
+  passsword: String!
+}
+
+input login {
+  username: String!
+  passsword: String!
+}
+
+type Mutation {
+  createLink(input newLink): Link!
+  createUser(input newUser): User!
+  login(input login): String!
+  refreshToken(input refreshTokenInput): String!
+}
+
+
