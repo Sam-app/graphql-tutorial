@@ -2,11 +2,12 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Links {
+
+# Our new schema
+type Link {
   id: ID!
   title: String!
-  address: String
-  postedBy: User
+  address: String!
   user: User!
 }
 
@@ -16,33 +17,32 @@ type User {
 }
 
 type Query {
-  links: [links!]
+  links: [Link!]!
 }
 
-input newLink {
+input NewLink {
   title: String!
   address: String!
-} 
+}
 
-input refreshTokenInput {
+input RefreshTokenInput{
   token: String!
 }
 
-input newUser {
+input NewUser {
   username: String!
-  passsword: String!
+  password: String!
 }
 
-input login {
+input Login {
   username: String!
-  passsword: String!
+  password: String!
 }
 
 type Mutation {
-  createLink(input newLink): Link!
-  createUser(input newUser): User!
-  login(input login): String!
-  refreshToken(input refreshTokenInput): String!
+  createLink(input: NewLink!): Link!
+  createUser(input: NewUser!): String!
+  login(input: Login!): String!
+  # we'll talk about this in authentication section
+  refreshToken(input: RefreshTokenInput!): String!
 }
-
-
