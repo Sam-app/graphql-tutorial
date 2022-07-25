@@ -20,6 +20,14 @@ type Query {
   links: [Link!]!
 }
 
+type Post {
+  id: ID!
+  title: String!
+  desc: String!
+  content: String!
+  
+}
+
 input NewLink {
   title: String!
   address: String!
@@ -38,6 +46,7 @@ input Login {
   username: String!
   password: String!
 }
+
 
 type Mutation {
   createLink(input: NewLink!): Link!

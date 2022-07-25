@@ -9,39 +9,47 @@ import (
 
 	"github.com/sam-app/hackernews/graph/generated"
 	"github.com/sam-app/hackernews/graph/model"
-	model1 "github.com/sam-app/hackernews/graph/model"
+	"github.com/sam-app/hackernews/packages/tables"
 )
 
 // CreateLink is the resolver for the createLink field.
-func (r *mutationResolver) CreateLink(ctx context.Context, input model1.NewLink) (*model1.Link, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreateLink(ctx context.Context, input model.NewLink) (*model.Link, error) {
+	var link tables.Link
+	link.Address = input.Address
+	link.Title = input.Title
+
+	linkID := link.Save()
+
+	return &model.Link{ID: linkID, Title: link.Title, Address: link.Address}, nil
 }
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, input model1.NewUser) (string, error) {
+func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (string, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
 // Login is the resolver for the login field.
-func (r *mutationResolver) Login(ctx context.Context, input model1.Login) (string, error) {
+func (r *mutationResolver) Login(ctx context.Context, input model.Login) (string, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
 // RefreshToken is the resolver for the refreshToken field.
-func (r *mutationResolver) RefreshToken(ctx context.Context, input model1.RefreshTokenInput) (string, error) {
+func (r *mutationResolver) RefreshToken(ctx context.Context, input model.RefreshTokenInput) (string, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
 // Links is the resolver for the links field.
-func (r *queryResolver) Links(ctx context.Context) ([]*model1.Link, error) {
-	var links []*model.Link
-	dummyLink := model.Link{
-		Title:   "our dummy link",
-		Address: "https://address.org",
-		User:    &model.User{Name: "admin"},
+func (r *queryResolver) Links(ctx context.Context) ([]*model.Link, error) {
+	var resultLinks []*model.Link
+	result, err := tables.GetAllLinks()
+	for _, link := range result {
+		resultLinks = append(resultLinks, &model.Link{ID: link.ID, Title: link.Title, Address: link.Address})
 	}
-	links = append(links, &dummyLink)
-	return links, nil
+	if err != nil {
+		return nil, err
+	}
+
+	return resultLinks, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
