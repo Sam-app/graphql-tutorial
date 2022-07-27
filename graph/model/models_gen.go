@@ -19,6 +19,12 @@ type NewLink struct {
 	Address string `json:"address"`
 }
 
+type NewPost struct {
+	Title   string `json:"title"`
+	Desc    string `json:"desc"`
+	Content string `json:"content"`
+}
+
 type NewUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`

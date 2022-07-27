@@ -28,6 +28,21 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	panic(fmt.Errorf("not implemented"))
 }
 
+// CreatePost is the resolver for the createPost field.
+func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPost) (*model.Post, error) {
+	var post model.Post
+	post.Title = input.Title
+	post.Desc = input.Desc
+	post.Content = input.Content
+
+	postID, err := post.Save()
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Post{ID: postID, Title: post.Title, Desc: post.Desc, Content: post.Content}, nil
+}
+
 // Login is the resolver for the login field.
 func (r *mutationResolver) Login(ctx context.Context, input model.Login) (string, error) {
 	panic(fmt.Errorf("not implemented"))
@@ -50,6 +65,34 @@ func (r *queryResolver) Links(ctx context.Context) ([]*model.Link, error) {
 	}
 
 	return resultLinks, nil
+}
+
+// Posts is the resolver for the posts field.
+func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
+	var resultPosts []*model.Post
+	var post model.Post
+	result, err := post.GetAllPosts()
+	for _, post := range result {
+		resultPosts = append(resultPosts, &model.Post{ID: post.ID, Title: post.Title, Desc: post.Desc, Content: post.Content})
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return resultPosts, nil
+}
+
+// Post is the resolver for the post field.
+func (r *queryResolver) Post(ctx context.Context, id string) (*model.Post, error) {
+	var post model.Post
+	result, err := post.GetPostById(id)
+	fmt.Println(result)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Post{ID: result.ID, Title: result.Title, Desc: result.Desc, Content: result.Content}, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
