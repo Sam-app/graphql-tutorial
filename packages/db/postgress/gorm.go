@@ -26,6 +26,10 @@ func InitDB() error {
 // 	return Db.Close()
 // }
 
-//  func Migrate() {
-//  	Db.AutoMigrate(&tables.Link{}, &tables.User{})
-// }
+func Migrate(models ...interface{}) error {
+	err := Db.AutoMigrate(models...)
+	if err != nil {
+		return fmt.Errorf("err: %s", err.Error())
+	}
+	return nil
+}
