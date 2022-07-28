@@ -66,4 +66,8 @@ models:
     fields:
       user:
         resolver: true
+  User:
+    fields:
+      posts:
+        resolver: true
 
