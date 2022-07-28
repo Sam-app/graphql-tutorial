@@ -23,18 +23,15 @@ type NewPost struct {
 	Title   string `json:"title"`
 	Desc    string `json:"desc"`
 	Content string `json:"content"`
+	UserID  string `json:"userId"`
 }
 
 type NewUser struct {
+	Name     string `json:"name"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 type RefreshTokenInput struct {
 	Token string `json:"token"`
-}
-
-type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
 }

@@ -11,6 +11,7 @@ type Post struct {
 	Title   string `json:"title"`
 	Desc    string `json:"desc"`
 	Content string `json:"content"`
+	UserID  string `json:"user_id"`
 }
 
 func (post *Post) Save() (int64, error) {
@@ -40,4 +41,13 @@ func (post *Post) GetPostById(id string) (
 		return p, result.Error
 	}
 	return p, nil
+}
+
+func GetUserPosts(userId string) ([]*Post, error) {
+	var posts []*Post
+	result := database.Db.Where("user_id = ?", userId).Find(&posts)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return posts, nil
 }
