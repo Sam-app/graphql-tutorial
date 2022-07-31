@@ -1,0 +1,22 @@
+# package schema
+
+# type Post {
+#   id: ID!
+#   title: String!
+#   desc: String!
+#   content: String!
+#   user: User!
+# }
+
+# input NewPost {
+#   title: String!
+#   desc: String!
+#   content: String!
+#   userId: ID!
+# }
+
+# type Mutation {
+#   createPost(input: NewPost!): Post
+# #   updatePost(id: ID!, input: NewPost!): Post
+# #   deletePost(id: ID!): Post
+# }

@@ -7,18 +7,18 @@ import (
 )
 
 type Post struct {
-	ID      int64  `json:"id"`
+	ID      string `json:"id"`
 	Title   string `json:"title"`
 	Desc    string `json:"desc"`
 	Content string `json:"content"`
 	UserID  string `json:"user_id"`
 }
 
-func (post *Post) Save() (int64, error) {
+func (post *Post) Save() (string, error) {
 	// id := rand.Int()
-	result := database.Db.Create(&Post{Title: post.Title, Desc: post.Desc, Content: post.Content})
+	result := database.Db.Create(&post)
 	if result.Error != nil {
-		return 0, result.Error
+		return "", result.Error
 	}
 	return post.ID, nil
 }
@@ -36,7 +36,6 @@ func (post *Post) GetPostById(id string) (
 	Post, error) {
 	var p Post
 	result := database.Db.First(&p, id)
-	fmt.Println("result: ", result)
 	if result.Error != nil {
 		return p, result.Error
 	}
@@ -50,4 +49,19 @@ func GetUserPosts(userId string) ([]*Post, error) {
 		return nil, result.Error
 	}
 	return posts, nil
+}
+
+//delete post
+func (p *Post) Delete() (Post, error) {
+	var post Post
+	database.Db.First(&post, p.ID)
+	if post.ID == "" {
+		return post, fmt.Errorf("post not found")
+	}
+	result := database.Db.Delete(&post)
+
+	if result.Error != nil {
+		return post, result.Error
+	}
+	return post, nil
 }

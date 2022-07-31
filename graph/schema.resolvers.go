@@ -24,8 +24,17 @@ func (r *mutationResolver) CreateLink(ctx context.Context, input model.NewLink) 
 }
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
+	var user model.User
+	user.Name = input.Name
+	user.Username = input.Username
+	user.Password = input.Password
+	newUser, err := user.Save()
+	if err != nil {
+		return nil, err
+	}
+
+	return newUser, nil
 }
 
 // CreatePost is the resolver for the createPost field.
@@ -43,6 +52,20 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPost) 
 	return &model.Post{ID: postID, Title: post.Title, Desc: post.Desc, Content: post.Content}, nil
 }
 
+// DeletePost is the resolver for the deletePost field.
+func (r *mutationResolver) DeletePost(ctx context.Context, id string) (*model.Post, error) {
+	var post model.Post
+	var err error
+	post.ID = id
+	post, err = post.Delete()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("Deleted post", post)
+
+	return &post, nil
+}
+
 // Login is the resolver for the login field.
 func (r *mutationResolver) Login(ctx context.Context, input model.Login) (string, error) {
 	panic(fmt.Errorf("not implemented"))
@@ -51,6 +74,11 @@ func (r *mutationResolver) Login(ctx context.Context, input model.Login) (string
 // RefreshToken is the resolver for the refreshToken field.
 func (r *mutationResolver) RefreshToken(ctx context.Context, input model.RefreshTokenInput) (string, error) {
 	panic(fmt.Errorf("not implemented"))
+}
+
+// User is the resolver for the user field.
+func (r *postResolver) User(ctx context.Context, obj *model.Post) (*model.User, error) {
+	return model.GetUserById(obj.UserID)
 }
 
 // Links is the resolver for the links field.
@@ -75,6 +103,7 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	for _, post := range result {
 		resultPosts = append(resultPosts, &model.Post{ID: post.ID, Title: post.Title, Desc: post.Desc, Content: post.Content})
 	}
+	fmt.Println("post", resultPosts)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +115,6 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 func (r *queryResolver) Post(ctx context.Context, id string) (*model.Post, error) {
 	var post model.Post
 	result, err := post.GetPostById(id)
-	fmt.Println(result)
 
 	if err != nil {
 		return nil, err
@@ -95,11 +123,34 @@ func (r *queryResolver) Post(ctx context.Context, id string) (*model.Post, error
 	return &model.Post{ID: result.ID, Title: result.Title, Desc: result.Desc, Content: result.Content}, nil
 }
 
+// Users is the resolver for the users field.
+func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+// User is the resolver for the user field.
+func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
+	return model.GetUserById(id)
+}
+
+// Posts is the resolver for the posts field.
+func (r *userResolver) Posts(ctx context.Context, obj *model.User) ([]*model.Post, error) {
+	return model.GetUserPosts(obj.ID)
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+
+// Post returns generated.PostResolver implementation.
+func (r *Resolver) Post() generated.PostResolver { return &postResolver{r} }
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+// User returns generated.UserResolver implementation.
+func (r *Resolver) User() generated.UserResolver { return &userResolver{r} }
+
 type mutationResolver struct{ *Resolver }
+type postResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type userResolver struct{ *Resolver }

@@ -6,11 +6,13 @@ import (
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 
 	"github.com/sam-app/hackernews/graph"
 	"github.com/sam-app/hackernews/graph/generated"
+	"github.com/sam-app/hackernews/graph/model"
 	database "github.com/sam-app/hackernews/packages/db/postgress"
 )
 
@@ -45,6 +47,10 @@ func main() {
 	if dbError != nil {
 		log.Fatalf("Error connecting to database: %s", dbError)
 	}
+	err := database.Migrate(&model.User{}, &model.Post{})
+	if err != nil {
+		log.Fatalf("Error migrating database: %s", err)
+	}
 
 	r := chi.NewRouter()
 	r.Use(cors.Handler(opts))
@@ -57,7 +63,7 @@ func main() {
 
 	server := handler.NewDefaultServer(generated.NewExecutableSchema((generated.Config{Resolvers: &graph.Resolver{}})))
 
-	//r.Handle("/graph", playground.Handler("GraphQL playground", "query"))
+	r.Handle("/playground", playground.Handler("GraphQL playground", "/graphql"))
 	r.Handle("/graphql", server)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
