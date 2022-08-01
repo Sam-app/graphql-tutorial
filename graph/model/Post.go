@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	database "github.com/sam-app/hackernews/packages/db/postgress"
 )
 
@@ -15,7 +16,8 @@ type Post struct {
 }
 
 func (post *Post) Save() (string, error) {
-	// id := rand.Int()
+	id := uuid.New().String()
+	post.ID = id
 	result := database.Db.Create(&post)
 	if result.Error != nil {
 		return "", result.Error
@@ -35,7 +37,8 @@ func (post *Post) GetAllPosts() ([]Post, error) {
 func (post *Post) GetPostById(id string) (
 	Post, error) {
 	var p Post
-	result := database.Db.First(&p, id)
+	p.ID = id
+	result := database.Db.First(&p)
 	if result.Error != nil {
 		return p, result.Error
 	}
