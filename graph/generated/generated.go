@@ -465,7 +465,7 @@ input NewPost {
   title: String!
   desc: String!
   content: String!
-  userId: String!
+  userId: String
 }
 
 
@@ -3942,7 +3942,7 @@ func (ec *executionContext) unmarshalInputNewPost(ctx context.Context, obj inter
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNString2string(ctx, v)
+			it.UserID, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}

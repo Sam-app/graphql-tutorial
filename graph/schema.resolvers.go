@@ -43,7 +43,7 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPost) 
 	post.Title = input.Title
 	post.Desc = input.Desc
 	post.Content = input.Content
-
+	post.UserID = "322bf063-cf70-48f8-9d95-d3fc29800bde" // TODO: get user id from context
 	postID, err := post.Save()
 	if err != nil {
 		return nil, err

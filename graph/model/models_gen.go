@@ -20,10 +20,10 @@ type NewLink struct {
 }
 
 type NewPost struct {
-	Title   string `json:"title"`
-	Desc    string `json:"desc"`
-	Content string `json:"content"`
-	UserID  string `json:"userId"`
+	Title   string  `json:"title"`
+	Desc    string  `json:"desc"`
+	Content string  `json:"content"`
+	UserID  *string `json:"userId"`
 }
 
 type NewUser struct {

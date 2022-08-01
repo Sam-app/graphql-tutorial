@@ -59,7 +59,7 @@ input NewPost {
   title: String!
   desc: String!
   content: String!
-  userId: String!
+  userId: String
 }
 
 
