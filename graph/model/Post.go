@@ -2,17 +2,21 @@ package model
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	database "github.com/sam-app/hackernews/packages/db/postgress"
 )
 
 type Post struct {
-	ID      string `json:"id"`
-	Title   string `json:"title"`
-	Desc    string `json:"desc"`
-	Content string `json:"content"`
-	UserID  string `json:"user_id"`
+	ID        string    `json:"id"`
+	Title     string    `json:"title"`
+	Desc      string    `json:"desc"`
+	Content   string    `json:"content"`
+	UserID    string    `json:"user_id"`
+	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at"`
+	DeletedAt time.Time `json:"deleted_at"`
 }
 
 func (post *Post) Save() (string, error) {
@@ -55,9 +59,9 @@ func GetUserPosts(userId string) ([]*Post, error) {
 }
 
 //delete post
-func (p *Post) Delete() (Post, error) {
-	var post Post
-	database.Db.First(&post, p.ID)
+func (post *Post) Delete() (*Post, error) {
+
+	database.Db.First(&post)
 	if post.ID == "" {
 		return post, fmt.Errorf("post not found")
 	}
@@ -67,4 +71,17 @@ func (p *Post) Delete() (Post, error) {
 		return post, result.Error
 	}
 	return post, nil
+}
+
+//search posts
+func (post *Post) Search(query string) ([]Post, error) {
+	var posts []Post
+	result := database.Db.
+		Where("title LIKE ?", "%"+query+"%").
+		Find(&posts)
+	fmt.Println("Search result", result)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return posts, nil
 }

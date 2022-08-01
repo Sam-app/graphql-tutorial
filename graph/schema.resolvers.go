@@ -9,6 +9,7 @@ import (
 
 	"github.com/sam-app/hackernews/graph/generated"
 	"github.com/sam-app/hackernews/graph/model"
+	database "github.com/sam-app/hackernews/packages/db/postgress"
 	"github.com/sam-app/hackernews/packages/tables"
 )
 
@@ -52,18 +53,44 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPost) 
 	return &model.Post{ID: postID, Title: post.Title, Desc: post.Desc, Content: post.Content}, nil
 }
 
+// UpdatePost is the resolver for the updatePost field.
+func (r *mutationResolver) UpdatePost(ctx context.Context, id string, input model.NewPost) (*model.Post, error) {
+	var post model.Post
+	post.ID = id
+	fmt.Println("post to update", post)
+	database.Db.Raw("SELECT * FROM posts WHERE id = ?", id).Scan(&post)
+	if post.ID == "" {
+		return nil, fmt.Errorf("Post not found")
+	}
+	if input.Title != "" {
+		post.Title = input.Title
+	}
+	if input.Desc != "" {
+		post.Desc = input.Desc
+	}
+	if input.Content != "" {
+		post.Content = input.Content
+	}
+	result := database.Db.Save(&post)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &post, nil
+}
+
 // DeletePost is the resolver for the deletePost field.
 func (r *mutationResolver) DeletePost(ctx context.Context, id string) (*model.Post, error) {
 	var post model.Post
 	var err error
+	fmt.Println("post to delete", id)
 	post.ID = id
-	post, err = post.Delete()
+	deletedPost, err := post.Delete()
 	if err != nil {
 		return nil, err
 	}
 	fmt.Println("Deleted post", post)
 
-	return &post, nil
+	return deletedPost, nil
 }
 
 // Login is the resolver for the login field.
@@ -121,6 +148,21 @@ func (r *queryResolver) Post(ctx context.Context, id string) (*model.Post, error
 	}
 
 	return &model.Post{ID: result.ID, Title: result.Title, Desc: result.Desc, Content: result.Content}, nil
+}
+
+// SearchPosts is the resolver for the searchPosts field.
+func (r *queryResolver) SearchPosts(ctx context.Context, search string) ([]*model.Post, error) {
+	var resultPosts []*model.Post
+	var post model.Post
+	result, err := post.Search(search)
+	for _, post := range result {
+		resultPosts = append(resultPosts, &model.Post{ID: post.ID, Title: post.Title, Desc: post.Desc, Content: post.Content})
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return resultPosts, nil
 }
 
 // Users is the resolver for the users field.

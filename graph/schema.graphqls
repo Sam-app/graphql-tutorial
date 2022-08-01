@@ -21,6 +21,7 @@ type Query {
   links: [Link!]!
   posts: [Post!]!
   post(id: ID!): Post
+  searchPosts(search: String!): [Post!]
   users: [User!]!
   user(id: ID!): User
 }
@@ -67,6 +68,7 @@ type Mutation {
   createLink(input: NewLink!): Link!
   createUser(input: NewUser!): User!
   createPost(input: NewPost!): Post!
+  updatePost(id: ID!, input: NewPost!): Post!
   deletePost(id: ID!): Post!
   login(input: Login!): String!
   # we'll talk about this in authentication section
