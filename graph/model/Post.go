@@ -79,7 +79,7 @@ func (post *Post) Search(query string) ([]Post, error) {
 	result := database.Db.
 		Where("title LIKE ?", "%"+query+"%").
 		Find(&posts)
-	fmt.Println("Search result", result)
+
 	if result.Error != nil {
 		return nil, result.Error
 	}
